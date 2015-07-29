@@ -21,7 +21,8 @@
             android:background="@color/black_overlay" android:orientation="horizontal"
             tools:ignore="UselessParent">
 
-            <Button android:id="@+id/dummy_button" style="?metaButtonBarButtonStyle"
+
+            <Button android:id="@+id/start_button" style="?metaButtonBarButtonStyle"
                 android:layout_width="0dp" android:layout_height="wrap_content"
                 android:layout_weight="1" android:text="@string/dummy_button" />
 
@@ -33,6 +34,17 @@
             android:id="@+id/imageView"
             android:layout_gravity="center_horizontal|top"
             android:src="@drawable/background"/>
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="time"
+            android:ems="10"
+            android:id="@+id/editText"
+            android:layout_gravity="center"
+            android:enabled="false"
+            android:text="00:30"
+            android:height="@dimen/abc_text_size_large_material" />
     </FrameLayout>
 
 </FrameLayout>

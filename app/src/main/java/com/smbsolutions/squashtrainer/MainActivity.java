@@ -7,27 +7,26 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.os.CountDownTimer;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 
+
+import java.util.Locale;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+public class MainActivity extends Activity  {
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- *
- * @see SystemUiHider
- */
-public class MainActivity extends Activity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
      */
-    private static final boolean AUTO_HIDE = true;
+    private static final boolean AUTO_HIDE = false;
 
     /**
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
@@ -39,7 +38,7 @@ public class MainActivity extends Activity {
      * If set, will toggle the system UI visibility upon interaction. Otherwise,
      * will show the system UI visibility upon interaction.
      */
-    private static final boolean TOGGLE_ON_CLICK = true;
+    private static final boolean TOGGLE_ON_CLICK = false;
 
     /**
      * The flags to pass to {@link SystemUiHider#getInstance}.
@@ -53,10 +52,20 @@ public class MainActivity extends Activity {
 
     private Button startButton;
     private EditText editText;
+    private TextToSpeech ttobj;
 
+    private FrameLayout background;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ttobj=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR) {
+                    ttobj.setLanguage(Locale.UK);
+                }
+            }
+        });
 
         setContentView(R.layout.activity_main);
 
@@ -65,6 +74,7 @@ public class MainActivity extends Activity {
 
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
+
         mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
         mSystemUiHider.setup();
         mSystemUiHider
@@ -97,14 +107,15 @@ public class MainActivity extends Activity {
                             // controls.
                             controlsView.setVisibility(visible ? View.VISIBLE : View.GONE);
                         }
-
+/*
                         if (visible && AUTO_HIDE) {
                             // Schedule a hide().
                             delayedHide(AUTO_HIDE_DELAY_MILLIS);
                         }
+                        */
                     }
                 });
-
+/*
         // Set up the user interaction to manually show or hide the system UI.
         contentView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,20 +127,85 @@ public class MainActivity extends Activity {
                 }
             }
         });
-
+*/
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.start_button).setOnTouchListener(mDelayHideTouchListener);
-        final CounterClass timer = new CounterClass(180000,1000);
+        final CounterClass timer = new CounterClass(60000,1000);
         startButton = (Button)findViewById(R.id.start_button);
+        background = (FrameLayout)findViewById(R.id.backgroundLayout);
+
+
+
+        background.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (startButton.getText().equals("Cancel")) {
+                    setRandomPin();
+                }
+            }
+        });
         editText = (EditText)findViewById(R.id.editText);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                timer.start();
+                if( startButton.getText().equals("Start")) {
+                    startButton.setText("Cancel");
+                    timer.start();
+                    setRandomPin();
+                }else
+                {
+                    startButton.setText("Start");
+                    timer.cancel();
+                }
             }
         });
+    }
+
+    private void setRandomPin()
+    {
+        Random r = new Random();
+        int randomNum = r.nextInt(6) + 1;
+        ttobj.speak(Integer.toString(randomNum), TextToSpeech.QUEUE_FLUSH, null);
+        switch (randomNum) {
+
+            case 1:
+                clearAllPins();
+                findViewById(R.id.pin1).setVisibility(View.VISIBLE);
+                break;
+            case 2:
+                clearAllPins();
+                findViewById(R.id.pin2).setVisibility(View.VISIBLE);
+
+                break;
+            case 3:
+                clearAllPins();
+                findViewById(R.id.pin3).setVisibility(View.VISIBLE);
+                break;
+            case 4:
+                clearAllPins();
+                findViewById(R.id.pin4).setVisibility(View.VISIBLE);
+                break;
+            case 5:
+                clearAllPins();
+                findViewById(R.id.pin5).setVisibility(View.VISIBLE);
+                break;
+            case 6:
+                clearAllPins();
+                findViewById(R.id.pin6).setVisibility(View.VISIBLE);
+        }
+
+
+    }
+    private void clearAllPins()
+    {
+        findViewById(R.id.pin1).setVisibility(View.INVISIBLE);
+        findViewById(R.id.pin2).setVisibility(View.INVISIBLE);
+        findViewById(R.id.pin3).setVisibility(View.INVISIBLE);
+        findViewById(R.id.pin4).setVisibility(View.INVISIBLE);
+        findViewById(R.id.pin5).setVisibility(View.INVISIBLE);
+        findViewById(R.id.pin6).setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -188,7 +264,7 @@ public class MainActivity extends Activity {
             String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
                     TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
                     TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
-            System.out.println(hms);
+
             editText.setText(hms);
         }
     }

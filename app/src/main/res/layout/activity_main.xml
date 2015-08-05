@@ -45,7 +45,7 @@
             android:id="@+id/editText"
             android:layout_gravity="center"
             android:enabled="false"
-            android:text="00:30"
+            android:text="01:00"
             android:height="@dimen/abc_text_size_large_material" />
 
         <ImageView
